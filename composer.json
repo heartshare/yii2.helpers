@@ -1,0 +1,17 @@
+{
+  "name": "hughcube/yii2-helpers",
+  "type": "yii2-extension",
+  "description": "",
+  "keywords": ["yii2"],
+  "license": "MIT",
+  "support": {},
+  "authors": [],
+  "require": {
+    "yiisoft/yii2": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "hughcube\\helpers\\": ""
+    }
+  }
+}

@@ -1,0 +1,214 @@
+<?php
+
+namespace hughcube\helpers;
+
+class ArrayHelper extends \yii\helpers\ArrayHelper
+{
+    /**
+     * 函数rebuildDimension把数组的全部值并如一个一维数组返回,不保留原先的键值;
+     *
+     * @param arr   array   [必须]    源数组;
+     * @return array;
+     */
+    public static function rebuildDimension(array $array)
+    {
+        $tmpArray = [];
+        foreach ($array as $value) {
+            if (is_array($value)) {
+                $tmpArray = array_merge($tmpArray, call_user_func(__METHOD__, $value));
+            } else {
+                $tmpArray[] = $value;
+            }
+        }
+
+        return $tmpArray;
+    }
+
+    /**
+     * 函数countValues,统计数组元素的个数;
+     *
+     * @param arr   array   [必须]    源数组;
+     * @return int;
+     */
+    public static function count(array $array)
+    {
+        $count = 0;
+        foreach ($array as $value) {
+            $count += (is_array($value) ? call_user_func(__METHOD__, $value) : 1);
+        }
+
+        return $count;
+    }
+
+    /**
+     * 查找一个数组一个值第一次出现的地方，没有找到该元素返回false；
+     *
+     * @param  array $array 数组；
+     * @param  [type]  $find          需要查找的元素；
+     * @param  boolean $caseSensitive 是否严格的比对类型；
+     * @return [type]
+     */
+    public static function findValue(array $array, $find, $caseSensitive = false)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $_key = call_user_func(__METHOD__, $value, $find, $caseSensitive);
+                if (false !== $_key) {
+                    return $key . '.' . $_key;
+                }
+            } else {
+                if (($find instanceof \Closure && $find($value))
+                    || ($caseSensitive ? $value === $find : $value == $find)
+                ) {
+                    return $key;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 方法rand,随机在数组里面取一部分元素;
+     *
+     * @param arr array [必选]    传入的数组;
+     * @param number int [必选] 返回的元素个数;
+     * @return array:
+     */
+    public static function rand(array $array, $number)
+    {
+        shuffle($array);
+
+        return array_slice($array, 0, $number, true);
+    }
+
+    /**
+     * 合并两个set, 组成一个新的set;
+     *
+     * @param  array $setA setA
+     * @param  array $setB setB
+     * @param  callback $filterFunction 过滤规则, 默认不过滤;
+     * @return array;
+     */
+    public static function mergeSet($set1, $set2, $filter = null)
+    {
+        $set = array_unique(array_merge($set1, $set2));
+        if (null !== $filter) {
+            $set = array_filter($set, $filter);
+        }
+
+        return array_values($set);
+    }
+
+    /**
+     * array_map的升级版, 递归;
+     *
+     * @param  array $array 需要处理的数组
+     * @param  callable $callback 回调方法
+     * @return array
+     */
+    public static function arrayMap(array $array, $callback)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $array[$key] = call_user_func(__METHOD__, $value, $callback);
+            } else {
+                $array[$key] = call_user_func($callback, $value, $key);
+            }
+        }
+
+        return $array;
+    }
+
+    /**
+     * 递归按照KEY排序
+     *
+     * @Author   hughcube.li
+     * @DateTime 2015-11-23T17:34:17+0800
+     * @param    array $array [description]
+     * @param    [type]                   $callback  [description]
+     * @param    bool $recursive [description]
+     * @return   [type]
+     */
+    public static function ksort(array $array, $callback, $recursive = true)
+    {
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $array[$key] = call_user_func(__METHOD__, $value, $callback, $recursive);
+            }
+        }
+        uksort($array, $callback);
+
+        return $array;
+    }
+
+    public static function getTree($items, $parentKey = 'parent', $childrenKey = 'items', $parent = null)
+    {
+        if (empty($items)) {
+            return $items;
+        }
+
+        $tree = [];
+
+        if (null === $parent) {
+            foreach ($items as $id => $item) {
+                if (isset($items[$item[$parentKey]])) {
+                    $items[$item[$parentKey]][$childrenKey][] = &$items[$id];
+                } else {
+                    $tree[] = &$items[$id];
+                }
+            }
+        } else {
+            foreach ($items as $id => $item) {
+                if ($item[$parentKey] == $parent) {
+                    $items[$id][$childrenKey] = call_user_func(__METHOD__, $items, $parentKey, $childrenKey, $id);
+                    $tree[] = $items[$id];
+                }
+            }
+        }
+
+        return $tree;
+    }
+
+    public static function getChildren($items, $parent, $parentKey = 'parent', $level = 1)
+    {
+        if (empty($items)) {
+            return $items;
+        }
+
+        $level++;
+
+        $children = [];
+        foreach ($items as $id => $item) {
+            if ($parent == static::getValue($item, $parentKey)) {
+                $children[$id] = $level;
+                $_children = call_user_func(__METHOD__, $items, $id, $level, $parentKey);
+                foreach ($_children as $_id => $_level) {
+                    $children[$_id] = $_level;
+                }
+            }
+        }
+
+        return $children;
+    }
+
+    public static function getParents($items, $child, $parentKey = 'parent', $level = 1)
+    {
+        if (empty($items) || !isset($items[$child])) {
+            return $items;
+        }
+        $level--;
+        $parents = [];
+        foreach ($items as $id => $item) {
+            if ($id == static::getValue($items[$child], $parentKey)) {
+                $parents[$id] = $level;
+                $_parents = call_user_func(__METHOD__, $items, $id, $level, $parentKey);
+                foreach ($_parents as $_id => $_level) {
+                    $parents[$_id] = $_level;
+                }
+            }
+        }
+
+        return $parents;
+    }
+}
