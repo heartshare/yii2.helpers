@@ -211,4 +211,23 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
 
         return $parents;
     }
+
+    public static function toString(array $data, $srotType = SORT_DESC)
+    {
+        if (SORT_DESC == $srotType) {
+            arsort($data, SORT_NATURAL);
+        } elseif (SORT_ASC == $srotType) {
+            ksort($data, SORT_NATURAL);
+        }
+
+        $buff = '';
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $value = call_user_func(__METHOD__, $value, $srotType);
+            }
+            $buff = "{$key}={$value}&";
+        }
+
+        return substr($buff, 0 - 1);
+    }
 }
