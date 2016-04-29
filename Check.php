@@ -149,12 +149,12 @@ class Check
     }
 
     /**
-     * 函数isAlphanum,判断一个字符串是否是数字和字母组成;
+     * 函数isAlnum,判断一个字符串是否是数字和字母组成;
      *
      * @param str string [必须] 需要判断的字符;
      * @return bool;
      */
-    public static function isAlphanum($string)
+    public static function isAlnum($string)
     {
         return ctype_alnum($string);
     }
