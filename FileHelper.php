@@ -63,15 +63,15 @@ class FileHelper extends \yii\helpers\FileHelper
      *
      * @param  string $file 文件名
      * @param  string $string 写入的内容
-     * @param  boolean $isAppend 是否使用追加的方式写入;
+     * @param  boolean $append 是否使用追加的方式写入;
      * @param  boolean $lockNB 是否堵塞;
-     * @param  [type]  $fileMode 创建文件的赋予的权限;
+     * @param  integer $fileMode 创建文件的赋予的权限;
      * @return boolean;
      */
-    public static function putContents($file, $string, $isAppend = false, $lockNB = false, $fileMode = null)
+    public static function putContents($file, $string, $append = false, $lockNB = false, $fileMode = null)
     {
         $result = false;
-        if (false !== ($fp = fopen($file, $isAppend ? 'a' : 'w'))) {
+        if (false !== ($fp = fopen($file, $append ? 'a' : 'w'))) {
             if (flock($fp, $lockNB ? (LOCK_EX | LOCK_NB) : LOCK_EX)) {
                 $result = fwrite($fp, $string);
                 null === $fileMode OR chmod($file, intval($fileMode));

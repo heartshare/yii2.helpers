@@ -21,7 +21,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
             }
         }
 
-        return $tmpArray;
+        return array_values($tmpArray);
     }
 
     /**
@@ -197,12 +197,14 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
         if (empty($items) || !isset($items[$child])) {
             return $items;
         }
+
         $level--;
+
         $parents = [];
         foreach ($items as $id => $item) {
             if ($id == static::getValue($items[$child], $parentKey)) {
                 $parents[$id] = $level;
-                $_parents = call_user_func(__METHOD__, $items, $id, $level, $parentKey);
+                $_parents = call_user_func(__METHOD__, $items, $id, $parentKey, $level);
                 foreach ($_parents as $_id => $_level) {
                     $parents[$_id] = $_level;
                 }
@@ -228,6 +230,17 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
             $buff = "{$key}={$value}&";
         }
 
-        return substr($buff, 0 - 1);
+        return '' !== $buff ? substr($buff, 0 - 1) : $buff;
+    }
+
+    public static function removeValue(array &$array, $value, $strict = false)
+    {
+        foreach ($array as $k => $v) {
+            if (($strict && $v === $value) || (!$strict && $v == $value)) {
+                unset($array[$k]);
+            }
+        }
+
+        return true;
     }
 }
