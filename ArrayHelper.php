@@ -243,4 +243,14 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
 
         return true;
     }
+
+    public static function getFields($array, $fields)
+    {
+        $result = [];
+        foreach ($fields as $field) {
+            $result[$field] = static::getValue($array, $field);
+        }
+
+        return $result;
+    }
 }
