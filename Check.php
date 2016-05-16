@@ -227,9 +227,14 @@ class Check
      * @param str string [必须] 需要判断的字符;
      * @return bool;
      */
-    public static function isMobile($string)
+    public static function isMobile($string, $returnRegexp = false)
     {
-        return preg_match('/^(13[0-9]|15[0-9]|18[0-9]|14[0-9]|17[0-9])\d{8}$/', $string);
+        $regexp = '/^(13[0-9]|15[0-9]|18[0-9]|14[0-9]|17[0-9])\d{8}$/';
+        if (null === $string && $returnRegexp) {
+            return $regexp;
+        }
+
+        return preg_match($regexp, $string);
     }
 
     /**
@@ -335,11 +340,12 @@ class Check
      */
     public static function telnet($hostname, $port, $timeout = 1)
     {
-        if (!static::range($port, 65535, 0) && $port !== -1) {
+        if (!static::isHostPort($port)) {
             return false;
         }
 
         if (function_exists('fSockOpen')) {
+            $errno = $errstr = null;
             $socket = @fSockOpen($hostname, $port, $errno, $errstr, $timeout);
             $results = false !== $socket && 0 == $errno;
             false !== $socket AND fclose($socket);
@@ -348,5 +354,10 @@ class Check
         }
 
         return true;
+    }
+
+    public static function isHostPort($port)
+    {
+        return static::range($port, 65535, 0);
     }
 }

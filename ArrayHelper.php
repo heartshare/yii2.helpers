@@ -90,7 +90,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      * @param  callback $filterFunction 过滤规则, 默认不过滤;
      * @return array;
      */
-    public static function mergeSet($set1, $set2, $filter = null)
+    public static function mergeSet(array $set1, array $set2, $filter = null)
     {
         $set = array_unique(array_merge($set1, $set2));
         if (null !== $filter) {
@@ -142,7 +142,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
         return $array;
     }
 
-    public static function getTree($items, $parentKey = 'parent', $childrenKey = 'items', $parent = null)
+    public static function getTree(array $items, $parentKey = 'parent', $childrenKey = 'items', $parent = null)
     {
         if (empty($items)) {
             return $items;
@@ -170,7 +170,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
         return $tree;
     }
 
-    public static function getChildren($items, $parent, $parentKey = 'parent', $level = 1)
+    public static function getChildren(array $items, $parent, $parentKey = 'parent', $level = 1)
     {
         if (empty($items)) {
             return $items;
@@ -192,7 +192,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
         return $children;
     }
 
-    public static function getParents($items, $child, $parentKey = 'parent', $level = 1)
+    public static function getParents(array $items, $child, $parentKey = 'parent', $level = 1)
     {
         if (empty($items) || !isset($items[$child])) {
             return $items;

@@ -43,7 +43,7 @@ final class IdCard
             return false;
         }
 
-        // 身份证规则一:身份证的前六位是地区的代码;
+        // 身份证规则二:身份证的前六位是地区的代码;
         if (!isset(static::$areaInfo[intval(substr($idCard, 0, 6))])) {
             return false;
         }

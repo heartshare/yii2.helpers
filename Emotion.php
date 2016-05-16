@@ -249,6 +249,7 @@ class Emotion
 
     /**
      * 把表情替换为图片地址
+     *
      * @param string $text
      * @return string
      */
@@ -261,6 +262,7 @@ class Emotion
 
     /**
      * 文本转换图片
+     *
      * @param string $text
      * @return string
      */
