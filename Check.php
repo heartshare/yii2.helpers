@@ -212,8 +212,8 @@ class Check
      */
     public static function isEmail($string, $isStrict = false)
     {
-        $result = filter_var($string, FILTER_VALIDATE_EMAIL);
-        if ($result && $isStrict && static::os('linux') && function_exists('getmxrr')) {
+        $result = false !== filter_var($string, FILTER_VALIDATE_EMAIL);
+        if ($result && $isStrict && function_exists('getmxrr')) {
             list($prefix, $domain) = explode('@', $string);
             $result = getmxrr($domain, $mxhosts);
         }
@@ -271,24 +271,59 @@ class Check
     }
 
     /**
-     * 函数isIp,判断是否为一个合法的IP地址,可以适用于IPV6;
+     * 函数isIp,判断是否为一个合法的IP地址
      *
      * @param str string [必须] 需要判断的字符;
      * @return bool;
      */
     public static function isIp($ip)
     {
-        return static::isIp4($ip) || static::isIp6($ip);
+        return false !== filter_var($ip, FILTER_VALIDATE_IP);
     }
 
+    /**
+     * 判断是否是ipv4
+     *
+     * @param $ip
+     * @return bool
+     */
     public static function isIp4($ip)
     {
-        return filter_var($ip, FILTER_VALIDATE_IP);
+        return false !== filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
     }
 
+    /**
+     * 判断是否是ipv6
+     *
+     * @param $ip
+     * @return bool
+     */
     public static function isIp6($ip)
     {
-        return filter_var($ip, FILTER_FLAG_IPV6);
+        return false !== filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6);
+    }
+
+    /**
+     * 判断是否是内网地址
+     *
+     * @param $ip
+     * @return bool
+     */
+    public static function isPrivateIp($ip)
+    {
+        return false === filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE)
+               && false !== filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE);
+    }
+
+    /**
+     * 判断是否是内网地址
+     *
+     * @param $ip
+     * @return bool
+     */
+    public static function isPublicIp($ip)
+    {
+        return false !== filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
     }
 
     /**
@@ -299,10 +334,11 @@ class Check
      */
     public static function isUrl($url, $checkAccess = false)
     {
-        if (!filter_var($url, FILTER_VALIDATE_URL)) {
+        if (false === filter_var($url, FILTER_VALIDATE_URL)) {
             return false;
         }
-        if ($checkAccess && !get_headers($url)) {
+
+        if ($checkAccess && !is_array(get_headers($url))) {
             return false;
         }
 
@@ -359,5 +395,24 @@ class Check
     public static function isHostPort($port)
     {
         return static::range($port, 65535, 0);
+    }
+
+    /**
+     * 判断是否是真值
+     * "1", "true", "on" 以及 "yes"，则返回 true。
+     * "0", "false", "off", "no" 以及 ""，则返回 false。
+     *
+     * @param $var
+     * @return bool
+     */
+    public static function isTrue($var)
+    {
+        $results = filter_var($var, FILTER_VALIDATE_BOOLEAN);
+
+        if (null === $results) {
+            return true == $var;
+        }
+
+        return $results;
     }
 }
