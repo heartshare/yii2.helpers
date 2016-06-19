@@ -44,18 +44,17 @@ class Check
      */
     public static function sapi($serverAPI = 'cli')
     {
-        return strtolower(PHP_SAPI) == strtolower($serverAPI);
+        return strtolower(php_sapi_name()) == strtolower($serverAPI);
     }
 
-    /**
-     * 函数checkOS,验证当前环境是否为指定系统;
-     *
-     * @param os ;
-     * @return bool;
-     */
-    public static function os($os = 'Win')
+    public static function isLinux()
     {
-        return strtolower(PHP_OS) == strtolower($os);
+        return PHP_OS === 'Linux';
+    }
+
+    public static function isMac()
+    {
+        return PHP_OS === 'Darwin';
     }
 
     /**
@@ -64,9 +63,11 @@ class Check
      * @param str string [必须] 需要判断的字符;
      * @return bool;
      */
-    public static function isEmpty($string, $trim = true)
+    public static function isEmpty($string, $trim = 'trim')
     {
-        $string = $trim ? trim($string) : $string;
+        if (null !== $trim) {
+            $string = call_user_func($trim, $string);
+        }
 
         return empty($string);
     }
@@ -79,7 +80,7 @@ class Check
      */
     public static function isUtf8($string)
     {
-        //return json_encode(array($string)) != '[null]';
+        return json_encode([$string]) != '[null]';
 
         // $temp1 = @iconv("GBK", "UTF-8", $string);
         // $temp2 = @iconv("UTF-8", "GBK", $temp1);
@@ -96,7 +97,7 @@ class Check
         //     | \xF4[\x80-\x8F][\x80-\xBF]{2}      # plane 16
         //     )*$%xs', $string);
 
-        return static::encoding($string, 'UTF-8');
+        //return static::encoding($string, 'UTF-8');
     }
 
     /**
@@ -227,14 +228,11 @@ class Check
      * @param str string [必须] 需要判断的字符;
      * @return bool;
      */
-    public static function isMobile($string, $returnRegexp = false)
-    {
-        $regexp = '/^(13[0-9]|15[0-9]|18[0-9]|14[0-9]|17[0-9])\d{8}$/';
-        if (null === $string && $returnRegexp) {
-            return $regexp;
-        }
+    const MOBILE_REGULAR_EXPRESSION = '/^(13[0-9]|14[0-9]|15[0-9]|18[0-9]|17[0-9])\d{8}$/';
 
-        return preg_match($regexp, $string);
+    public static function isMobile($string)
+    {
+        return preg_match(static::MOBILE_REGULAR_EXPRESSION, $string);
     }
 
     /**

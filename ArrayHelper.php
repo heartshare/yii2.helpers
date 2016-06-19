@@ -217,7 +217,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
     public static function toString(array $data, $srotType = SORT_DESC)
     {
         if (SORT_DESC == $srotType) {
-            arsort($data, SORT_NATURAL);
+            krsort($data, SORT_NATURAL);
         } elseif (SORT_ASC == $srotType) {
             ksort($data, SORT_NATURAL);
         }
@@ -227,10 +227,10 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
             if (is_array($value)) {
                 $value = call_user_func(__METHOD__, $value, $srotType);
             }
-            $buff = "{$key}={$value}&";
+            $buff .= "{$key}={$value}&";
         }
 
-        return '' !== $buff ? substr($buff, 0 - 1) : $buff;
+        return '' !== $buff ? substr($buff, 0, -1) : $buff;
     }
 
     public static function removeValue(array &$array, $value, $strict = false)
