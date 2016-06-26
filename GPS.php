@@ -105,7 +105,7 @@ class GPS
                 'y1' => $points[($i - 1)][1],
                 'y2' => $points[$i][1]
             ];
-            if (static::isInLine($point, $tmpline)) {
+            if (static::inLine($point, $tmpline)) {
                 return true;
             }            // 判断是否在线上，是直接返回true
             if (static::isCross($newline, $tmpline)) {
@@ -120,7 +120,7 @@ class GPS
             'y2' => $points[0][1]
         ];
         // 判断是否在线上，是直接返回true
-        if (static::isInLine($point, $tmpline)) {
+        if (static::inLine($point, $tmpline)) {
             return true;
         }
         if (static::isCross($newline, $tmpline)) {
@@ -143,7 +143,7 @@ class GPS
     }
 
     // 判断点是否在线段上
-    public function isInLine($p, $line)
+    public static function inLine($p, $line)
     {
         if ($line['x1'] == $line['x2']) {
             return $p[0] == $line['x1'] && ($p[1] < max($line['y1'], $line['y2']) && $p[1] > min($line['y1'], $line['y2']));

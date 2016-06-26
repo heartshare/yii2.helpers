@@ -90,14 +90,19 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      * @param  callback $filterFunction 过滤规则, 默认不过滤;
      * @return array;
      */
-    public static function mergeSet(array $set1, array $set2, $filter = null)
+    public static function mergeSet(array $sets1, array $sets2, $filterCallback = true)
     {
-        $set = array_unique(array_merge($set1, $set2));
-        if (null !== $filter) {
-            $set = array_filter($set, $filter);
+        $sets = array_unique(array_merge($sets1, $sets2));
+
+        if (null !== $filterCallback) {
+            if (true === $filterCallback) {
+                $sets = array_filter($sets);
+            } else {
+                $sets = array_filter($sets, $filterCallback);
+            }
         }
 
-        return array_values($set);
+        return array_values($sets);
     }
 
     /**
