@@ -128,7 +128,7 @@ final class IdCard
 
     public static function getAreaName($areaCode)
     {
-        return static::$areas[$areaCode] ? static::$areas[$areaCode] : null;
+        return isset(static::$areas[$areaCode]) ? static::$areas[$areaCode] : null;
     }
 
     public static function rand($area = null, $year = null, $month = null, $day = null, $gender = null, $tail = null)

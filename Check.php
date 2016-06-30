@@ -10,9 +10,17 @@ class Check
      *
      * @return bool;
      */
-    public static function length($string, $min = 0, $max = 255)
+    public static function length($string, $min = null, $max = null)
     {
-        return ($min == 0 || isset($string{$min - 1})) && !isset($string{$max});
+        if (null !== $min && !isset($string{$max - 1})) {
+            return false;
+        }
+
+        if (null !== $max && isset($string{$max})) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -20,7 +28,7 @@ class Check
      *
      * @return bool;
      */
-    public static function range($number, $max = null, $min = null)
+    public static function range($number, $min = null, $max = null)
     {
         if (null !== $max && $max < $number) {
             return false;
@@ -42,19 +50,24 @@ class Check
      * @param serverAPI string [可选] 默认为cli,验证是否为命令行模式;
      * @return bool;
      */
-    public static function sapi($serverAPI = 'cli')
+    //    public static function sapi($serverAPI = 'cli')
+    //    {
+    //        return strtolower(php_sapi_name()) == strtolower($serverAPI);
+    //    }
+
+    public static function isCli()
     {
-        return strtolower(php_sapi_name()) == strtolower($serverAPI);
+        return 'cli' === php_sapi_name();
     }
 
     public static function isLinux()
     {
-        return PHP_OS === 'Linux';
+        return 'Linux' === PHP_OS;
     }
 
     public static function isMac()
     {
-        return PHP_OS === 'Darwin';
+        return 'Darwin' === PHP_OS;
     }
 
     /**
@@ -392,7 +405,7 @@ class Check
 
     public static function isHostPort($port)
     {
-        return static::range($port, 65535, 0);
+        return static::isDigit($port) && static::range($port, 65535, 0);
     }
 
     /**
@@ -405,10 +418,8 @@ class Check
      */
     public static function isTrue($var)
     {
-        $results = filter_var($var, FILTER_VALIDATE_BOOLEAN);
-
-        if (null === $results) {
-            return true == $var;
+        if (null === ($results = filter_var($var, FILTER_VALIDATE_BOOLEAN))) {
+            return false;
         }
 
         return $results;
