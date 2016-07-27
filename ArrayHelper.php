@@ -178,7 +178,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
     public static function getChildren(array $items, $parent, $parentKey = 'parent', $level = 1)
     {
         if (empty($items)) {
-            return $items;
+            return [];
         }
 
         $level++;
@@ -200,7 +200,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
     public static function getParents(array $items, $child, $parentKey = 'parent', $level = 1)
     {
         if (empty($items) || !isset($items[$child])) {
-            return $items;
+            return [];
         }
 
         $level--;
