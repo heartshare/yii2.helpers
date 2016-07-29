@@ -125,26 +125,18 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
         return $array;
     }
 
-    /**
-     * 递归按照KEY排序
-     *
-     * @Author   hughcube.li
-     * @DateTime 2015-11-23T17:34:17+0800
-     * @param    array $array [description]
-     * @param    [type]                   $callback  [description]
-     * @param    bool $recursive [description]
-     * @return   [type]
-     */
-    public static function ksort(array $array, $callback, $recursive = true)
+
+    public static function sortTree(array $tree, $childrenKey = 'items', callable $callable)
     {
-        foreach ($array as $key => $value) {
-            if (is_array($value)) {
-                $array[$key] = call_user_func(__METHOD__, $value, $callback, $recursive);
+        foreach ($tree as $key => $item) {
+            if (isset($item[$childrenKey])) {
+                $tree[$key][$childrenKey] = call_user_func(__METHOD__, $item[$childrenKey], $callable);
             }
         }
-        uksort($array, $callback);
 
-        return $array;
+        usort($tree, $callable);
+
+        return $tree;
     }
 
     public static function getTree(array $items, $parentKey = 'parent', $childrenKey = 'items', $parent = null)
@@ -187,7 +179,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
         foreach ($items as $id => $item) {
             if ($parent == static::getValue($item, $parentKey)) {
                 $children[$id] = $level;
-                $_children = call_user_func(__METHOD__, $items, $id, $level, $parentKey);
+                $_children = call_user_func(__METHOD__, $items, $id, $parentKey, $level);
                 foreach ($_children as $_id => $_level) {
                     $children[$_id] = $_level;
                 }
