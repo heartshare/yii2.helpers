@@ -21,7 +21,14 @@ final class TimeHelper
     public static function date($format, $time = null)
     {
         $time = null === $time ? microtime(true) : $time;
-        $millisec = str_pad(strval(round(($time - intval($time)) * 1000)), 3, '0', STR_PAD_LEFT);
+        $millisec = round(($time - intval($time)) * 1000);
+
+        if (1000 == $millisec) {
+            $time++;
+            $millisec = 0;
+        }
+
+        $millisec = str_pad(strval($millisec), 3, '0', STR_PAD_LEFT);
 
         return date(strtr($format, ['u' => $millisec]), intval($time));
     }
