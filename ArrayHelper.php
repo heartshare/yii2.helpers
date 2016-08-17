@@ -8,6 +8,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      * 函数rebuildDimension把数组的全部值并如一个一维数组返回,不保留原先的键值;
      *
      * @param arr   array   [必须]    源数组;
+     *
      * @return array;
      */
     public static function rebuildDimension(array $array)
@@ -28,6 +29,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      * 函数countValues,统计数组元素的个数;
      *
      * @param arr   array   [必须]    源数组;
+     *
      * @return int;
      */
     public static function count(array $array)
@@ -46,6 +48,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      * @param  array $array 数组；
      * @param  [type]  $find          需要查找的元素；
      * @param  boolean $caseSensitive 是否严格的比对类型；
+     *
      * @return [type]
      */
     public static function findValue(array $array, $find, $caseSensitive = false)
@@ -73,6 +76,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      *
      * @param arr array [必选]    传入的数组;
      * @param number int [必选] 返回的元素个数;
+     *
      * @return array:
      */
     public static function rand(array $array, $number)
@@ -88,6 +92,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      * @param  array $setA setA
      * @param  array $setB setB
      * @param  callback $filterFunction 过滤规则, 默认不过滤;
+     *
      * @return array;
      */
     public static function mergeSet(array $sets1, array $sets2, $filterCallback = true)
@@ -110,6 +115,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
      *
      * @param  array $array 需要处理的数组
      * @param  callable $callback 回调方法
+     *
      * @return array
      */
     public static function arrayMap(array $array, $callback)
@@ -185,6 +191,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
                 }
             }
         }
+        arsort($children);
 
         return $children;
     }
@@ -207,6 +214,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
                 }
             }
         }
+        asort($parents);
 
         return $parents;
     }
@@ -241,11 +249,20 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
         return true;
     }
 
-    public static function getFields($array, $fields)
+    public static function getFields($array, $fields, $skipExists = false)
     {
         $result = [];
-        foreach ($fields as $field) {
-            $result[$field] = static::getValue($array, $field);
+
+        if ($skipExists) {
+            foreach ($fields as $field) {
+                if (array_key_exists($field, $array)) {
+                    $result[$field] = $array[$field];
+                }
+            }
+        } else {
+            foreach ($fields as $field) {
+                $result[$field] = static::getValue($array, $field);
+            }
         }
 
         return $result;
