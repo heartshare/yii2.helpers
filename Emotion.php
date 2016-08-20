@@ -251,9 +251,10 @@ class Emotion
      * 把表情替换为图片地址
      *
      * @param string $text
+     *
      * @return string
      */
-    static public function textToEmotionImg($text)
+    public static function textToEmotionImg($text)
     {
         $text = preg_replace("/\[([^<>`~!@#$%^&*(){}\[\]]+)\]/ise", "self::emotionTextToImg('\\0')", $text);
 
@@ -264,9 +265,10 @@ class Emotion
      * 文本转换图片
      *
      * @param string $text
+     *
      * @return string
      */
-    static public function emotionTextToImg($text)
+    public static function emotionTextToImg($text)
     {
         $emotion = $GLOBALS['EMOTION_LIST'][$text];
         if (isset($emotion)) {
@@ -276,7 +278,7 @@ class Emotion
         return $text;
     }
 
-    static public function iconToText($text)
+    public static function iconToText($text)
     {
         if (preg_match_all('/\<img[^>]+title\s*=\s*[\'\"]?([^\'\"]*)[\'\"]?\s*[^>]+\>/is', $text, $match)) {
             if (!empty($match[0]) && is_array($match[0])) {

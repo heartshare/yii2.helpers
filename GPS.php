@@ -10,7 +10,7 @@ class GPS
      * 就算两个经纬度的距离
      *
      * @param  $location string, 格式: longitude,latitude
-     * @return double 单位米
+     * @return double|bool 单位米
      */
     public function getDistance($locationA, $locationB)
     {
@@ -44,7 +44,7 @@ class GPS
      * 解析经纬度字符串, 经度在前纬度在后
      *
      * @param  $location string 113.1111,22.86789
-     * @return array ['lng' => 经度, 'lat' => 纬度]
+     * @return array|bool ['lng' => 经度, 'lat' => 纬度]
      */
     public static function analyseLocation($location)
     {
@@ -161,6 +161,5 @@ class GPS
         }
 
         return abs(($line['x1'] - $line['x2']) / ($line['y1'] - $line['y2'])) == abs(($line['x1'] - $p[0]) / ($line['y1'] - $p[1]));
-
     }
 }

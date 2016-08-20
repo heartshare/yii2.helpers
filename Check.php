@@ -395,8 +395,7 @@ class Check
             $errno = $errstr = null;
             $socket = @fSockOpen($hostname, $port, $errno, $errstr, $timeout);
             $results = false !== $socket && 0 == $errno;
-            false !== $socket AND fclose($socket);
-
+            false !== $socket and fclose($socket);
             return $results;
         }
 

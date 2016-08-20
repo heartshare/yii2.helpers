@@ -10,14 +10,15 @@ final class PinYin
     /**
      * 汉字转化并输出拼音
      *
-     * @param
-     *          str string [必选] 需要转换的字符串;
+     * @param string $str [必选] 需要转换的字符串;
+     *
      * @return string
      */
     public static function toPinYin($str)
     {
-        if (!is_string($str) || empty($str))
+        if (!is_string($str) || empty($str)) {
             return false;
+        }
 
         $isUtf8 = Check::isUtf8($str);
         $str = $isUtf8 ? StringHelper::autoCharset('utf-8', 'gbk', $str) : $str;
@@ -41,12 +42,14 @@ final class PinYin
      *
      * @param
      *          str string [必选] 需要转换的字符串;
+     *
      * @return string
      */
     public static function firstToPinYin($str)
     {
-        if (!is_string($str) || empty($str))
+        if (!is_string($str) || empty($str)) {
             return false;
+        }
 
         $isUtf8 = Check::isUtf8($str);
         $str = ($isUtf8 == true) ? StringHelper::autoCharset('utf-8', 'gbk', $str) : $str;
@@ -65,6 +68,7 @@ final class PinYin
      *
      * @param
      *          num int [必选]    对应的ASCII;
+     *
      * @return string
      */
     private static function num2str($num)
@@ -76,8 +80,9 @@ final class PinYin
         } else {
             $total = count(static::$_lib) - 1;
             for ($i = $total; $i >= 0; $i--) {
-                if (static::$_lib[$i][1] <= $num)
+                if (static::$_lib[$i][1] <= $num) {
                     break;
+                }
             }
 
             return static::$_lib[$i][0];

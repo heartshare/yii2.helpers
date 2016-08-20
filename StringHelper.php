@@ -122,6 +122,7 @@ class StringHelper extends \yii\helpers\StringHelper
      * @param contents   string|array [必须] 需要转行的数据;
      * @param from enum('gbk','utf-8') [可选] 原始编码,默认是@gbk编码;
      * @param to enum('gbk','utf-8') [可选] 目标编码,默认是@utf-8编码;
+     *
      * @return string;
      */
     public static function autoCharset($contents, $from = 'gbk', $to = 'utf-8', $changeKeyCharset = false)
@@ -157,6 +158,7 @@ class StringHelper extends \yii\helpers\StringHelper
      * @param   start string [可选] 从那里开始截取;
      * @param   suffix string [可选] 截取字符后加上的后缀,默认为@...;
      * @param   charset enum('gbk','utf-8') [可选] 字符的编码,默认为@utf-8;
+     *
      * @return string;
      */
     public static function msubstr($str, $length, $start = 0, $suffix = '...', $charset = 'utf-8')
@@ -172,12 +174,11 @@ class StringHelper extends \yii\helpers\StringHelper
                 $charLen = 2;
         }
         // 小于指定长度，直接返回
-        if (strlen($str) <= ($length * $charLen))
+        if (strlen($str) <= ($length * $charLen)) {
             return $str;
-
-        if (function_exists("mb_substr")) {
+        } elseif (function_exists('mb_substr')) {
             $slice = mb_substr($str, $start, $length, $charset);
-        } else if (function_exists('iconv_substr')) {
+        } elseif (function_exists('iconv_substr')) {
             $slice = iconv_substr($str, $start, $length, $charset);
         } else {
             $re['utf-8'] = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
@@ -202,65 +203,68 @@ class StringHelper extends \yii\helpers\StringHelper
      *
      * @param string $string
      * 原字符串
-     * @param interger $length
+     * @param integer $length
      * 截取的字符数
      * @param string $etc
      * 省略字符
      * @param string $charset
      * 原字符串的编码
+     *
      * @return string
      */
-    static public function substr_cn($string, $length = 80, $charset = 'UTF-8', $etc = '...')
+    public static function substrCN($string, $length = 80, $charset = 'UTF-8', $etc = '...')
     {
-        if (mb_strwidth($string, 'UTF-8') <= $length)
+        if (mb_strwidth($string, 'UTF-8') <= $length) {
             return $string;
+        }
 
         return mb_strimwidth($string, 0, $length, '', $charset) . $etc;
     }
 
-    /**
-     * 中英文混杂字符串截取
-     *
-     * @param string $string 原字符串
-     * @param interger $length 截取字数(中英各代表一个字)
-     * @param string $charset 编码
-     */
-    static public function substrCN($string, $length = 80, $charset = 'UTF-8')
-    {
-        $i = $k = $nextstart = 0;
-
-        $split_count = ceil(strlen($string) / ($length * 2));
-        for ($ii = 0; $ii < $split_count; $ii++) {
-            $en = $cn = 0;
-            while ($k < $length) {
-                if (preg_match("/[0-9a-zA-Z]/", $string[$i])) {
-                    $en++; //纯英文
-                } else {
-                    $cn++; //非英文字节
-                }
-                $k = $cn / 3 + $en / 2;
-                $i++;
-            }
-
-            $split_len += $cn / 3 + $en; //最终截取长度
-            $start = $nextstart;
-            $nextstart += floor($split_len);
-            $tmpstr = mb_substr($string, $start, $split_len, $charset);
-            if (!empty($tmpstr)) {
-                $split_array[] = mb_substr($string, $start, $split_len, $charset);
-            }
-        }
-
-        return $split_array;
-    }
+    //    /**
+    //     * 中英文混杂字符串截取
+    //     *
+    //     * @param string $string 原字符串
+    //     * @param integer $length 截取字数(中英各代表一个字)
+    //     * @param string $charset 编码
+    //     */
+    //    public static function substrCn($string, $length = 80, $charset = 'UTF-8')
+    //    {
+    //        $i = $k = $nextstart = 0;
+    //
+    //        $split_count = ceil(strlen($string) / ($length * 2));
+    //        for ($ii = 0; $ii < $split_count; $ii++) {
+    //            $en = $cn = 0;
+    //            while ($k < $length) {
+    //                if (preg_match("/[0-9a-zA-Z]/", $string[$i])) {
+    //                    $en++; //纯英文
+    //                } else {
+    //                    $cn++; //非英文字节
+    //                }
+    //                $k = $cn / 3 + $en / 2;
+    //                $i++;
+    //            }
+    //
+    //            $split_len += $cn / 3 + $en; //最终截取长度
+    //            $start = $nextstart;
+    //            $nextstart += floor($split_len);
+    //            $tmpstr = mb_substr($string, $start, $split_len, $charset);
+    //            if (!empty($tmpstr)) {
+    //                $split_array[] = mb_substr($string, $start, $split_len, $charset);
+    //            }
+    //        }
+    //
+    //        return $split_array;
+    //    }
 
     /**
      * 函数_asciiHtmlEntityEncode,返回字符的html实体;
      *
      * @param str string    [必选]    需要转换的字符;
+     *
      * @return string;
      */
-    public static function HtmlEntityEncode($str)
+    public static function htmlEntityEncode($str)
     {
         $len = strlen($str);
         $a = 0;
@@ -270,22 +274,22 @@ class StringHelper extends \yii\helpers\StringHelper
             if (ord($str{$a}) >= 0 && ord($str{$a}) <= 127) {
                 $ud = ord($str{$a});
                 $a += 1;
-            } else if (ord($str{$a}) >= 192 && ord($str{$a}) <= 223) {
+            } elseif (ord($str{$a}) >= 192 && ord($str{$a}) <= 223) {
                 $ud = (ord($str{$a}) - 192) * 64 + (ord($str{$a + 1}) - 128);
                 $a += 2;
-            } else if (ord($str{$a}) >= 224 && ord($str{$a}) <= 239) {
+            } elseif (ord($str{$a}) >= 224 && ord($str{$a}) <= 239) {
                 $ud = (ord($str{$a}) - 224) * 4096 + (ord($str{$a + 1}) - 128) * 64 + (ord($str{$a + 2}) - 128);
                 $a += 3;
-            } else if (ord($str{$a}) >= 240 && ord($str{$a}) <= 247) {
+            } elseif (ord($str{$a}) >= 240 && ord($str{$a}) <= 247) {
                 $ud = (ord($str{$a}) - 240) * 262144 + (ord($str{$a + 1}) - 128) * 4096 + (ord($str{$a + 2}) - 128) * 64 + (ord($str{$a + 3}) - 128);
                 $a += 4;
-            } else if (ord($str{$a}) >= 248 && ord($str{$a}) <= 251) {
+            } elseif (ord($str{$a}) >= 248 && ord($str{$a}) <= 251) {
                 $ud = (ord($str{$a}) - 248) * 16777216 + (ord($str{$a + 1}) - 128) * 262144 + (ord($str{$a + 2}) - 128) * 4096 + (ord($str{$a + 3}) - 128) * 64 + (ord($str{$a + 4}) - 128);
                 $a += 5;
-            } else if (ord($str{$a}) >= 252 && ord($str{$a}) <= 253) {
+            } elseif (ord($str{$a}) >= 252 && ord($str{$a}) <= 253) {
                 $ud = (ord($str{$a}) - 252) * 1073741824 + (ord($str{$a + 1}) - 128) * 16777216 + (ord($str{$a + 2}) - 128) * 262144 + (ord($str{$a + 3}) - 128) * 4096 + (ord($str{$a + 4}) - 128) * 64 + (ord($str{$a + 5}) - 128);
                 $a += 6;
-            } else if (ord($str{$a}) >= 254 && ord($str{$a}) <= 255) {
+            } elseif (ord($str{$a}) >= 254 && ord($str{$a}) <= 255) {
                 $ud = false;
             }
             $scill .= "&#$ud;";
@@ -298,6 +302,7 @@ class StringHelper extends \yii\helpers\StringHelper
      * 函数_asciiHtmlEntityDecode,把html实体转换为普通字符;
      *
      * @param  str string    [必选]    需要转换的字符;
+     *
      * @return string;
      */
     public static function htmlEntityDecode($str)
@@ -308,7 +313,7 @@ class StringHelper extends \yii\helpers\StringHelper
         foreach ($a as $dec) {
             if ($dec < 128) {
                 $utf .= chr($dec);
-            } else if ($dec < 2048) {
+            } elseif ($dec < 2048) {
                 $utf .= chr(192 + (($dec - ($dec % 64)) / 64));
                 $utf .= chr(128 + ($dec % 64));
             } else {
@@ -335,6 +340,7 @@ class StringHelper extends \yii\helpers\StringHelper
      *
      * @param $length integer
      * @param $type integer，1：字母(大小写)数字，2：字母(小写)数字，3：数字
+     *
      * @return string;
      */
     public static function randomChar($length, $type = 1)

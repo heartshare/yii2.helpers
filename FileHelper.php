@@ -74,7 +74,7 @@ class FileHelper extends \yii\helpers\FileHelper
         if (false !== ($fp = fopen($file, $append ? 'a' : 'w'))) {
             if (flock($fp, $lockNB ? (LOCK_EX | LOCK_NB) : LOCK_EX)) {
                 $result = fwrite($fp, $string);
-                null === $fileMode OR chmod($file, intval($fileMode));
+                null === $fileMode or chmod($file, intval($fileMode));
                 flock($fp, LOCK_UN);
             }
             fclose($fp);

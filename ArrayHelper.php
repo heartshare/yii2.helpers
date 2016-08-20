@@ -132,7 +132,7 @@ class ArrayHelper extends \yii\helpers\ArrayHelper
     }
 
 
-    public static function sortTree(array $tree, $childrenKey = 'items', callable $callable)
+    public static function sortTree(array $tree, callable $callable, $childrenKey = 'items')
     {
         foreach ($tree as $key => $item) {
             if (isset($item[$childrenKey])) {
