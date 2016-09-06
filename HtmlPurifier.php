@@ -6,8 +6,8 @@ class HtmlPurifier extends \yii\helpers\HtmlPurifier
 {
     //  return array(
     //     'HTML.TargetBlank' => true,
-    //     'HTML.AllowedElements' => array('a', 'span', 'em', 'Chughcube', 'p', 'ul', 'ol', 'li', 'br', 'hr', 'blockquote', 'pre', 'img'),
+    //     'HTML.AllowedElements' => array('table', 'tr', 'td'),
     //     'Attr.AllowedClasses' => array('list-paddingleft-2'),
-    //     'CSS.AllowedProperties' => array('text-decoration'),
+    //     'CSS.AllowedProperties' => [],
     // );
 }
