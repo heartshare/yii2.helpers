@@ -129,23 +129,24 @@ class StringHelper extends \yii\helpers\StringHelper
     {
         $from = strtoupper($from) == 'UTF8' ? 'utf-8' : $from;
         $to = strtoupper($to) == 'UTF8' ? 'utf-8' : $to;
-        if (strtoupper($from) === strtoupper($to) || empty($contents) || (is_scalar($contents) && !is_string($contents))) {
+        if (strtoupper($from) === strtoupper($to) || empty($contents)
+            || (is_scalar($contents)
+                && !is_string($contents))
+        ){
             return $contents;
         }
 
-        if (is_string($contents)) {
-            return function_exists('mb_convert_encoding')
-                ? mb_convert_encoding($contents, $to, $from) : (function_exists('iconv')
-                    ? iconv($from, $to, $contents) : $contents);
-        } elseif (is_array($contents)) {
+        if (is_string($contents)){
+            return function_exists('mb_convert_encoding') ? mb_convert_encoding($contents, $to, $from) : (function_exists('iconv') ? iconv($from, $to, $contents) : $contents);
+        }elseif (is_array($contents)){
             $_contents = [];
-            foreach ($contents as $key => $value) {
+            foreach($contents as $key => $value){
                 $_key = $changeKeyCharset ? call_user_func(__METHOD__, $key, $from, $to) : $key;
                 $_contents[$_key] = call_user_func(__METHOD__, $value, $from, $to);
             }
 
             return $_contents;
-        } else {
+        }else{
             return $contents;
         }
     }
@@ -161,9 +162,11 @@ class StringHelper extends \yii\helpers\StringHelper
      *
      * @return string;
      */
-    public static function msubstr($str, $length, $start = 0, $suffix = '...', $charset = 'utf-8')
+    public static function msubstr($str, $start = 0, $length = null, $suffix = '...', $charset = 'utf-8')
     {
-        switch ($charset) {
+        $length = null === $length ? strlen($length) : $length;
+
+        switch($charset){
             case 'utf-8':
                 $charLen = 3;
                 break;
@@ -174,13 +177,13 @@ class StringHelper extends \yii\helpers\StringHelper
                 $charLen = 2;
         }
         // 小于指定长度，直接返回
-        if (strlen($str) <= ($length * $charLen)) {
+        if (strlen($str) <= ($length * $charLen)){
             return $str;
-        } elseif (function_exists('mb_substr')) {
+        }elseif (function_exists('mb_substr')){
             $slice = mb_substr($str, $start, $length, $charset);
-        } elseif (function_exists('iconv_substr')) {
+        }elseif (function_exists('iconv_substr')){
             $slice = iconv_substr($str, $start, $length, $charset);
-        } else {
+        }else{
             $re['utf-8'] = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
             $re['gb2312'] = "/[\x01-\x7f]|[\xb0-\xf7][\xa0-\xfe]/";
             $re['gbk'] = "/[\x01-\x7f]|[\x81-\xfe][\x40-\xfe]/";
@@ -214,7 +217,7 @@ class StringHelper extends \yii\helpers\StringHelper
      */
     public static function substrCN($string, $length = 80, $charset = 'UTF-8', $etc = '...')
     {
-        if (mb_strwidth($string, 'UTF-8') <= $length) {
+        if (mb_strwidth($string, 'UTF-8') <= $length){
             return $string;
         }
 
@@ -269,27 +272,34 @@ class StringHelper extends \yii\helpers\StringHelper
         $len = strlen($str);
         $a = 0;
         $scill = '';
-        while ($a < $len) {
+        while($a < $len){
             $ud = 0;
-            if (ord($str{$a}) >= 0 && ord($str{$a}) <= 127) {
+            if (ord($str{$a}) >= 0 && ord($str{$a}) <= 127){
                 $ud = ord($str{$a});
                 $a += 1;
-            } elseif (ord($str{$a}) >= 192 && ord($str{$a}) <= 223) {
+            }elseif (ord($str{$a}) >= 192 && ord($str{$a}) <= 223){
                 $ud = (ord($str{$a}) - 192) * 64 + (ord($str{$a + 1}) - 128);
                 $a += 2;
-            } elseif (ord($str{$a}) >= 224 && ord($str{$a}) <= 239) {
+            }elseif (ord($str{$a}) >= 224 && ord($str{$a}) <= 239){
                 $ud = (ord($str{$a}) - 224) * 4096 + (ord($str{$a + 1}) - 128) * 64 + (ord($str{$a + 2}) - 128);
                 $a += 3;
-            } elseif (ord($str{$a}) >= 240 && ord($str{$a}) <= 247) {
-                $ud = (ord($str{$a}) - 240) * 262144 + (ord($str{$a + 1}) - 128) * 4096 + (ord($str{$a + 2}) - 128) * 64 + (ord($str{$a + 3}) - 128);
+            }elseif (ord($str{$a}) >= 240 && ord($str{$a}) <= 247){
+                $ud = (ord($str{$a}) - 240) * 262144 + (ord($str{$a + 1}) - 128) * 4096 + (ord($str{$a + 2}) - 128) * 64
+                      + (ord($str{$a + 3}) - 128);
                 $a += 4;
-            } elseif (ord($str{$a}) >= 248 && ord($str{$a}) <= 251) {
-                $ud = (ord($str{$a}) - 248) * 16777216 + (ord($str{$a + 1}) - 128) * 262144 + (ord($str{$a + 2}) - 128) * 4096 + (ord($str{$a + 3}) - 128) * 64 + (ord($str{$a + 4}) - 128);
+            }elseif (ord($str{$a}) >= 248 && ord($str{$a}) <= 251){
+                $ud = (ord($str{$a}) - 248) * 16777216 + (ord($str{$a + 1}) - 128) * 262144 + (ord($str{$a + 2}) - 128)
+                                                                                              * 4096 + (ord($str{$a
+                                                                                                                 + 3})
+                                                                                                        - 128) * 64
+                      + (ord($str{$a + 4}) - 128);
                 $a += 5;
-            } elseif (ord($str{$a}) >= 252 && ord($str{$a}) <= 253) {
-                $ud = (ord($str{$a}) - 252) * 1073741824 + (ord($str{$a + 1}) - 128) * 16777216 + (ord($str{$a + 2}) - 128) * 262144 + (ord($str{$a + 3}) - 128) * 4096 + (ord($str{$a + 4}) - 128) * 64 + (ord($str{$a + 5}) - 128);
+            }elseif (ord($str{$a}) >= 252 && ord($str{$a}) <= 253){
+                $ud = (ord($str{$a}) - 252) * 1073741824 + (ord($str{$a + 1}) - 128) * 16777216 + (ord($str{$a + 2})
+                                                                                                   - 128) * 262144
+                      + (ord($str{$a + 3}) - 128) * 4096 + (ord($str{$a + 4}) - 128) * 64 + (ord($str{$a + 5}) - 128);
                 $a += 6;
-            } elseif (ord($str{$a}) >= 254 && ord($str{$a}) <= 255) {
+            }elseif (ord($str{$a}) >= 254 && ord($str{$a}) <= 255){
                 $ud = false;
             }
             $scill .= "&#$ud;";
@@ -310,13 +320,13 @@ class StringHelper extends \yii\helpers\StringHelper
         preg_match_all('/(d{2,5})/', $str, $a);
         $a = $a[0];
         $utf = '';
-        foreach ($a as $dec) {
-            if ($dec < 128) {
+        foreach($a as $dec){
+            if ($dec < 128){
                 $utf .= chr($dec);
-            } elseif ($dec < 2048) {
+            }elseif ($dec < 2048){
                 $utf .= chr(192 + (($dec - ($dec % 64)) / 64));
                 $utf .= chr(128 + ($dec % 64));
-            } else {
+            }else{
                 $utf .= chr(224 + (($dec - ($dec % 4096)) / 4096));
                 $utf .= chr(128 + ((($dec % 4096) - ($dec % 64)) / 64));
                 $utf .= chr(128 + ($dec % 64));
@@ -328,8 +338,7 @@ class StringHelper extends \yii\helpers\StringHelper
 
     public static function appendToSet($set, $appendSet, $delimiter = ',', $filterFunction = null)
     {
-        $appendSet = is_array($appendSet) ? $appendSet
-            : explode($delimiter, trim($appendSet, $delimiter));
+        $appendSet = is_array($appendSet) ? $appendSet : explode($delimiter, trim($appendSet, $delimiter));
         $appendSet = is_array($set) ? $set : explode($delimiter, trim($set, $delimiter));
 
         return implode($delimiter, ArrayHelper::appendToSet($set, $appendSet, $filterFunction));
@@ -354,7 +363,7 @@ class StringHelper extends \yii\helpers\StringHelper
         $strPolLen = strlen($strPol[$type]);
 
         $string = '';
-        for ($i = 0; $i < $length; $i++) {
+        for($i = 0; $i < $length; $i++){
             $string .= $strPol[$type][rand(0, $strPolLen - 1)];
         }
 
