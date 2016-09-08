@@ -336,14 +336,6 @@ class StringHelper extends \yii\helpers\StringHelper
         return $utf;
     }
 
-    public static function appendToSet($set, $appendSet, $delimiter = ',', $filterFunction = null)
-    {
-        $appendSet = is_array($appendSet) ? $appendSet : explode($delimiter, trim($appendSet, $delimiter));
-        $appendSet = is_array($set) ? $set : explode($delimiter, trim($set, $delimiter));
-
-        return implode($delimiter, ArrayHelper::appendToSet($set, $appendSet, $filterFunction));
-    }
-
     /**
      * 生成随机字符串
      *

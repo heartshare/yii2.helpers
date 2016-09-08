@@ -32,10 +32,10 @@ class FileHelper extends \yii\helpers\FileHelper
         } elseif (is_file($directory)) {
             $directorySize += filesize($directory);
         }
-        
+
         return $directorySize;
     }
-    
+
     /**
      * 读取文件;
      *
@@ -53,10 +53,10 @@ class FileHelper extends \yii\helpers\FileHelper
             }
             fclose($fp);
         }
-        
+
         return $contents;
     }
-    
+
     /**
      * 安全写入文件内容, 文件不存在就创建文件;
      *
@@ -78,10 +78,10 @@ class FileHelper extends \yii\helpers\FileHelper
             }
             fclose($fp);
         }
-        
+
         return $result;
     }
-    
+
     /**
      * 优化include, 主要防止变量污染
      *
